@@ -15,6 +15,8 @@ const tiltAngleOnJump = 25;
 const imageNameSplashScreen = "sky";
 const flowerSprite = "flower";
 const assbuttSprite = "assbutt";
+const playAgainActiveButton = "play_again_active";
+const playAgainPressButton = "play_again_press";
 
 // DEBUGGING:
 const debugEnabled = false;
@@ -48,7 +50,7 @@ let config = {
 };
 
 let game = new Phaser.Game(config);
-let gameArea, assbutt, textPrompt, firstFlower;
+let gameArea, assbutt, textPrompt, firstFlower, playAgainButton, playAgainButtonPressed;
 
 function gameCenter()
 {
@@ -64,11 +66,14 @@ function preload()
     this.load.image(imageNameSplashScreen, "img/background.jpg");
     this.load.image(flowerSprite, "img/flower.png");
     this.load.image(assbuttSprite, "img/assbutt.png");
+    this.load.image(playAgainActiveButton, "img/play_again_active.png");
+    this.load.image(playAgainPressButton, "img/play_again_press.png");
 }
 
 let pointerIsDown = false;
 let assbuttOnFlower = false;
-
+const playerStartX = 100;
+const playerStartY = canvasHeight / 2 - 100;
 function create()
 {
     const center = gameCenter();
@@ -81,10 +86,9 @@ function create()
     firstFlower.displayHeight = 512;
     firstFlower.body.allowGravity = false;
 
-    assbutt = this.physics.add.sprite(100, center.y - 100, assbuttSprite);
+    assbutt = this.physics.add.sprite(playerStartX, playerStartY, assbuttSprite);
     assbutt.displayWidth = 112;
     assbutt.displayHeight = 99;
-    assbutt.setCollideWorldBounds(true);
     this.physics.add.overlap(assbutt, firstFlower, (assbuttCollide) => {
         assbuttOnFlower = true;
     }, null, this);
@@ -97,16 +101,21 @@ function create()
         strokeThickness: "3",
     });
 
-    this.input.on("pointerdown", (pointer, gameObject) => {
+    this.input.on("pointerdown", (pointer) => {
         pointerIsDown = true;
     }, this);
-    this.input.on("pointerup", (pointer, gameObject) => {
+    this.input.on("pointerup", (pointer) => {
         pointerIsDown = false;
+        if(playAgainButtonPressed)
+        {
+            playAgainButtonPressed.visible = false;
+        }
         if(textPrompt.text === tapToJumpPrompt)
         {
             textPrompt.text = "";
         }
     }, this);
+
     game.input.touch.startListeners();
 
     // Dismisses the loading screen:
@@ -116,9 +125,17 @@ function create()
 let jumpedForFirstTime = false;
 let textGrowing = true;
 let remainingJumpTicks = jumpTicksPerCharge;
+let gameIsOver = false;
+let gameOverFirstTime = true;
 
 function update()
 {
+    if(gameIsOver)
+    {
+        return;
+    }
+
+    const center = gameCenter();
     if(textPrompt.text)
     {
         const delta = textGrowing ? textScaleChange : -textScaleChange;
@@ -156,6 +173,36 @@ function update()
         if(debugEnabled)
         {
             console.log(remainingJumpTicks);
+        }
+    }
+
+    if(assbutt.y > game.canvas.height)
+    {
+        gameIsOver = true;
+        assbutt.body.allowGravity = false;
+        if(gameOverFirstTime)
+        {
+            playAgainButton = this.add.sprite(center.x, center.y, playAgainActiveButton).setInteractive();
+            playAgainButtonPressed = this.add.image(center.x, center.y, playAgainPressButton)
+            playAgainButtonPressed.visible = false;
+            playAgainButton = playAgainButton.setInteractive();
+            playAgainButton.on("pointerover", (pointer) => {
+                playAgainButtonPressed.visible = true;
+            }, this);
+            playAgainButton.on("pointerup", (pointer) => {
+                gameIsOver = false;
+                assbutt.x = playerStartX;
+                assbutt.y = playerStartY;
+                assbutt.body.allowGravity = true;
+                playAgainButton.active = false;
+                playAgainButton.visible = false;
+            }, this);
+            gameOverFirstTime = false;
+        }
+        else
+        {
+            playAgainButton.active = true;
+            playAgainButton.visible = true;
         }
     }
 }
