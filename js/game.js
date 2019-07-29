@@ -60,9 +60,10 @@ function gameCenter()
 
 function preload()
 {
-    this.load.image(imageNameSplashScreen, "../img/background.jpg");
-    this.load.image(flowerSprite, "../img/flower.png");
-    this.load.image(assbuttSprite, "../img/assbutt.png");
+    this.load.setBaseURL(window.location.href);
+    this.load.image(imageNameSplashScreen, "img/background.jpg");
+    this.load.image(flowerSprite, "img/flower.png");
+    this.load.image(assbuttSprite, "img/assbutt.png");
 }
 
 let pointerIsDown = false;
