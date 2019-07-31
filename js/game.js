@@ -16,6 +16,8 @@ const horizontalFlowerThreshold = 130;
 const scoreBumpIncrement = 5000;
 // Player
 const jumpHeight = 500;
+const initialJumpHeight = 1000;
+const initialJumpTimeMilliseconds = 500;
 const jumpTicksPerCharge = 65;
 const tiltAngleOnJump = 25;
 const minPlayAgainViewportX = 0.3;
@@ -367,10 +369,15 @@ function update()
         }
     }
 
+    if(pointerdown && assbuttOnFlower)
+    {
+        assbutt.setVelocity(0, -jumpHeight);
+    }
+
     if(pointerIsDown && remainingJumpTicks)
     {
         jumpedForFirstTime = true;
-        assbutt.setVelocity(0, -jumpHeight);
+        // assbutt.setVelocity(0, -jumpHeight);
         assbutt.setAngle(-tiltAngleOnJump, 0);
         updateJumpTicks(remainingJumpTicks - 1)
         assbuttOnFlower = false;
