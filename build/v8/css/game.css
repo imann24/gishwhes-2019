@@ -1,0 +1,35 @@
+@font-face {
+    font-family: BigJohn;
+    src: url("../font/big_john.otf");
+}
+
+canvas, body {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+#loading {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+}
+
+#loading_text {
+    width: 100vw;
+    top: 45vh;
+    text-align: center;
+    font-size: 10vw;
+    font-family: BigJohn;
+    color: #1ab6d5;
+    position: fixed;
+}
+
+#play_button {
+    width:50vw;
+    top: 25vh;
+    left: 25vw;
+    margin: auto;
+    position: fixed;
+    display: none;
+}
